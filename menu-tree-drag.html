@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>菜单管理 · 三层树形拖拽</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #EEF1F6;
+    --surface: #FFFFFF;
+    --surface-alt: #F5F7FA;
+    --ink: #1F2A37;
+    --ink-dim: #6B7686;
+    --border: #DCE1E9;
+    --accent: #3457D5;
+    --accent-soft: #E7ECFC;
+    --line: #C7CEDA;
+    --l1: #3457D5;
+    --l2: #1E9E82;
+    --l3: #B8892F;
+    --danger: #D14C4C;
+    --radius: 10px;
+    --row-h: 46px;
+    --guide-w: 22px;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+    display: flex;
+    justify-content: center;
+    padding: 34px 16px 80px;
+  }
+
+  .app-shell { width: 100%; max-width: 620px; }
+
+  header { margin-bottom: 18px; }
+
+  .eyebrow {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+  }
+
+  h1 {
+    font-family: "Manrope", sans-serif;
+    font-weight: 700;
+    font-size: clamp(22px, 4.5vw, 27px);
+    margin: 6px 0 8px;
+  }
+
+  .subtitle { font-size: 13px; color: var(--ink-dim); line-height: 1.7; max-width: 520px; }
+
+  .rules-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 12.5px;
+    color: var(--ink-dim);
+    line-height: 1.8;
+    margin: 16px 0 20px;
+  }
+  .rules-box b { color: var(--ink); font-weight: 600; }
+
+  .toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  .legend { display: flex; gap: 14px; font-size: 12px; color: var(--ink-dim); }
+  .legend .dot { display: inline-block; width: 9px; height: 9px; border-radius: 3px; margin-right: 5px; vertical-align: middle; }
+
+  #resetBtn {
+    font-family: "Manrope", sans-serif;
+    font-weight: 600;
+    font-size: 12.5px;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    color: var(--ink);
+    border-radius: 999px;
+    padding: 7px 15px;
+    cursor: pointer;
+  }
+  #resetBtn:hover { border-color: var(--accent); color: var(--accent); }
+  #resetBtn:active { transform: translateY(1px); }
+
+  /* ---------- tree panel ---------- */
+  .panel {
+    position: relative;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 6px;
+    box-shadow: 0 1px 3px rgba(31,42,55,0.05);
+  }
+
+  .tree-list { position: relative; }
+
+  .row {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: var(--row-h);
+    border-radius: 8px;
+    padding-right: 10px;
+  }
+  .row:hover { background: var(--surface-alt); }
+  .row.is-dragging { box-shadow: 0 10px 22px rgba(31,42,55,0.18); background: var(--surface); z-index: 60; border: 1px solid var(--accent); }
+
+  .row.level-1 { font-weight: 700; margin-top: 4px; }
+  .row.level-1 .name { font-size: 14.5px; }
+
+  .guide-col {
+    position: relative;
+    width: var(--guide-w);
+    height: 100%;
+    flex-shrink: 0;
+  }
+  .guide-col.line::before {
+    content: ""; position: absolute; left: 10px; top: 0; bottom: 0; width: 1.5px; background: var(--line);
+  }
+  .guide-col.elbow-mid::before {
+    content: ""; position: absolute; left: 10px; top: 0; bottom: 0; width: 1.5px; background: var(--line);
+  }
+  .guide-col.elbow-mid::after {
+    content: ""; position: absolute; left: 10px; top: 50%; width: 11px; height: 1.5px; background: var(--line); transform: translateY(-1px);
+  }
+  .guide-col.elbow-last::before {
+    content: ""; position: absolute; left: 10px; top: 0; height: 50%; width: 1.5px; background: var(--line);
+  }
+  .guide-col.elbow-last::after {
+    content: ""; position: absolute; left: 10px; top: 50%; width: 11px; height: 1.5px; background: var(--line); transform: translateY(-1px);
+  }
+
+  .handle {
+    background: none; border: none; color: var(--ink-dim);
+    font-size: 14px; cursor: grab; padding: 4px 6px; line-height: 1;
+    touch-action: none; flex-shrink: 0;
+  }
+  .handle:active { cursor: grabbing; }
+
+  .icon {
+    width: 20px; height: 20px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    margin-right: 8px;
+  }
+  .icon svg { width: 100%; height: 100%; }
+
+  .name { flex: 1; font-size: 13.8px; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  .path-badge {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    color: var(--ink-dim);
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 2px 8px;
+    flex-shrink: 0;
+    margin-left: 8px;
+  }
+
+  .row.level-1 .path-badge { color: var(--l1); border-color: color-mix(in srgb, var(--l1) 35%, var(--border)); }
+  .row.level-2 .path-badge { color: var(--l2); border-color: color-mix(in srgb, var(--l2) 35%, var(--border)); }
+  .row.level-3 .path-badge { color: var(--l3); border-color: color-mix(in srgb, var(--l3) 35%, var(--border)); }
+
+  .placeholder-row {
+    display: flex; align-items: center; height: 40px;
+    border: 1.5px dashed var(--border);
+    border-radius: 8px;
+    margin: 2px 8px 4px;
+    font-size: 12px;
+    color: var(--ink-dim);
+    padding-left: 10px;
+  }
+  .placeholder-row.drop-hover { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+
+  /* ---------- drop indicator ---------- */
+  .drop-line {
+    position: absolute;
+    left: 0; right: 10px;
+    height: 2px;
+    background: var(--accent);
+    border-radius: 2px;
+    pointer-events: none;
+    z-index: 50;
+    display: none;
+  }
+  .drop-line::before {
+    content: "";
+    position: absolute;
+    left: -2px; top: 50%;
+    width: 7px; height: 7px;
+    background: var(--accent);
+    border-radius: 50%;
+    transform: translateY(-50%);
+  }
+
+  .drop-hint {
+    position: absolute;
+    z-index: 51;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    color: #fff;
+    background: var(--ink);
+    padding: 3px 9px;
+    border-radius: 6px;
+    white-space: nowrap;
+    pointer-events: none;
+    display: none;
+    transform: translateY(-130%);
+  }
+
+  .row.drop-target-box {
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+    background: var(--accent-soft);
+    border-radius: 8px;
+  }
+
+  button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+  @media (prefers-reduced-motion: reduce){
+    * { transition-duration: 0.01s !important; animation-duration: 0.01s !important; }
+  }
+
+  @media (max-width: 480px){
+    :root{ --guide-w: 16px; --row-h: 42px; }
+    .name { font-size: 13px; }
+    .path-badge { font-size: 10px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app-shell">
+  <header>
+    <div class="eyebrow">Tree Drag &amp; Drop Demo</div>
+    <h1>菜单管理 · 树形拖拽</h1>
+    <p class="subtitle">固定三层结构（模块 → 分组 → 菜单项）。拖动任意节点，可在同级之间重新排序，也可以把它挪到另一个分支下——但节点始终停留在自己原来的层级，树的总层数保持不变。</p>
+  </header>
+
+  <div class="rules-box">
+    <b>规则说明：</b> 每个节点只能与<b>同一层级</b>的其他节点交换位置或更换所属分支，不会出现"降级/升级"跨层挪动，因此层级数永远保持 1-2-3 三层不变。松手后，所有节点名称后的括号会重新计算并显示其"层级路径"（模块序号-分组序号-菜单项序号）。
+  </div>
+
+  <div class="toolbar">
+    <div class="legend">
+      <span><span class="dot" style="background:var(--l1)"></span>模块</span>
+      <span><span class="dot" style="background:var(--l2)"></span>分组</span>
+      <span><span class="dot" style="background:var(--l3)"></span>菜单项</span>
+    </div>
+    <button id="resetBtn" type="button">重置结构</button>
+  </div>
+
+  <div class="panel">
+    <div class="tree-list" id="treeList"></div>
+    <div class="drop-line" id="dropLine"></div>
+    <div class="drop-hint" id="dropHint"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* =========================================================================
+   * Data model
+   * -------------------------------------------------------------------------
+   * A fixed 3-level tree. Level 1 nodes live in `state.tree` (their implicit
+   * parent is the virtual root, id 'ROOT'). Level 3 nodes never have children
+   * (they are leaves) - depth is entirely determined by nesting position,
+   * never stored on the node itself, so it can't get out of sync.
+   * ========================================================================= */
+
+  const ICONS = {
+    1: '<svg viewBox="0 0 24 24" fill="none"><path d="M3 6a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6Z" fill="currentColor"/></svg>',
+    2: '<svg viewBox="0 0 24 24" fill="none"><path d="M3 8a2 2 0 0 1 2-2h4l2 2h6a2 2 0 0 1 2 2v.5H5.5A2.5 2.5 0 0 0 3 13V8Z" fill="currentColor" opacity="0.55"/><path d="M3.6 11.2a2 2 0 0 1 1.9-1.4h13a2 2 0 0 1 1.94 2.5l-1.2 4.8A2 2 0 0 1 17.3 18.6H5.7a2 2 0 0 1-1.94-1.5l-1.2-4.8a2 2 0 0 1 .04-.1Z" fill="currentColor"/></svg>',
+    3: '<svg viewBox="0 0 24 24" fill="none"><path d="M6 3h8l5 5v12a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" fill="currentColor" opacity="0.85"/><path d="M14 3v5h5" fill="none" stroke="#fff" stroke-width="1.4"/></svg>'
+  };
+  const ICON_COLOR = { 1: 'var(--l1)', 2: 'var(--l2)', 3: 'var(--l3)' };
+
+  function n(id, name, children){ return { id, name, children: children || [] }; }
+
+  const INITIAL_TREE = [
+    n('sys', '系统管理', [
+      n('sys-auth', '权限设置', [ n('sys-auth-role', '角色管理'), n('sys-auth-user', '用户管理') ]),
+      n('sys-log', '系统日志', [ n('sys-log-login', '登录日志'), n('sys-log-op', '操作日志') ])
+    ]),
+    n('sale', '销售管理', [
+      n('sale-order', '订单中心', [ n('sale-order-manage', '订单管理'), n('sale-order-refund', '退款管理') ]),
+      n('sale-cust', '客户中心', [ n('sale-cust-info', '客户资料'), n('sale-cust-tag', '客户标签') ])
+    ]),
+    n('purch', '采购管理', [
+      n('purch-supplier', '供应商', [ n('purch-supplier-info', '供应商资料'), n('purch-supplier-grade', '供应商评级') ]),
+      n('purch-order', '采购单据', [ n('purch-order-detail', '采购详情'), n('purch-order-approve', '采购审批') ])
+    ])
+  ];
+
+  let tree = deepClone(INITIAL_TREE);
+
+  function deepClone(x){ return JSON.parse(JSON.stringify(x)); }
+
+  /* ---------- tree lookup helpers ---------- */
+
+  // Finds a node anywhere in the tree along with the array it lives in
+  // (so callers can splice it out / reinsert it) and its parent's id
+  // ('ROOT' for level-1 nodes).
+  function locate(id, nodes, parentId){
+    nodes = nodes || tree;
+    parentId = parentId === undefined ? 'ROOT' : parentId;
+    for (let i = 0; i < nodes.length; i++){
+      if (nodes[i].id === id){
+        return { node: nodes[i], siblings: nodes, index: i, parentId };
+      }
+      const deeper = locate(id, nodes[i].children, nodes[i].id);
+      if (deeper) return deeper;
+    }
+    return null;
+  }
+
+  function findNode(id){
+    const loc = locate(id);
+    return loc ? loc.node : null;
+  }
+
+  function childrenArrayFor(parentId){
+    if (parentId === 'ROOT') return tree;
+    const node = findNode(parentId);
+    return node ? node.children : null;
+  }
+
+  /* ---------- moving a node while keeping its own depth fixed ---------- */
+  function moveNode(draggedId, targetParentId, targetIndex){
+    const loc = locate(draggedId);
+    if (!loc) return;
+    const [draggedNode] = loc.siblings.splice(loc.index, 1);
+
+    const destArray = childrenArrayFor(targetParentId);
+    if (!destArray) { // safety fallback: put it back if target vanished somehow
+      loc.siblings.splice(loc.index, 0, draggedNode);
+      return;
+    }
+
+    let insertAt = targetIndex;
+    if (loc.parentId === targetParentId && loc.index < insertAt){
+      insertAt -= 1; // account for the shift caused by removing the node above
+    }
+    insertAt = Math.max(0, Math.min(insertAt, destArray.length));
+    destArray.splice(insertAt, 0, draggedNode);
+  }
+
+  /* =========================================================================
+   * Flatten the tree into renderable rows, computing:
+   *  - depth (1/2/3)
+   *  - guide-line columns (classic "is this ancestor's branch still open"
+   *    algorithm used by file-tree UIs)
+   *  - a placeholder row for any container with zero children, so users
+   *    always have a valid drop target even into an empty group/module
+   *  - the live path label (e.g. "2-1-1") from each node's position
+   * ========================================================================= */
+  function buildRows(){
+    const rows = [];
+
+    tree.forEach((l1, i1) => {
+      rows.push({ kind: 'node', node: l1, depth: 1, parentId: 'ROOT', guides: [], isLast: i1 === tree.length - 1, label: String(i1 + 1) });
+      appendChildren(l1, 2, [], String(i1 + 1));
+    });
+
+    function appendChildren(parentNode, depth, prefix, parentLabel){
+      if (parentNode.children.length === 0){
+        rows.push({ kind: 'placeholder', depth, parentId: parentNode.id, guides: prefix, isLast: true });
+        return;
+      }
+      parentNode.children.forEach((child, i) => {
+        const isLast = i === parentNode.children.length - 1;
+        const label = parentLabel + '-' + (i + 1);
+        rows.push({ kind: 'node', node: child, depth, parentId: parentNode.id, guides: prefix, isLast, label });
+        if (depth < 3){
+          appendChildren(child, depth + 1, prefix.concat(!isLast), label);
+        }
+      });
+    }
+
+    return rows;
+  }
+
+  /* ---------- rendering ---------- */
+  const treeListEl = document.getElementById('treeList');
+  const dropLine = document.getElementById('dropLine');
+  const dropHint = document.getElementById('dropHint');
+  const resetBtn = document.getElementById('resetBtn');
+
+  function guideHTML(guides, depth, isLast){
+    if (depth === 1) return '';
+    let html = '';
+    guides.forEach(continues => {
+      html += '<div class="guide-col' + (continues ? ' line' : '') + '"></div>';
+    });
+    html += '<div class="guide-col ' + (isLast ? 'elbow-last' : 'elbow-mid') + '"></div>';
+    return html;
+  }
+
+  function render(){
+    treeListEl.innerHTML = '';
+    const rows = buildRows();
+
+    rows.forEach(row => {
+      if (row.kind === 'placeholder'){
+        const el = document.createElement('div');
+        el.className = 'placeholder-row';
+        el.dataset.placeholderParent = row.parentId;
+        el.dataset.depth = row.depth;
+        el.innerHTML = guideHTML(row.guides, row.depth, true) + '<span>（空）拖拽项目到这里</span>';
+        treeListEl.appendChild(el);
+        return;
+      }
+
+      const node = row.node;
+      const el = document.createElement('div');
+      el.className = 'row level-' + row.depth;
+      el.dataset.id = node.id;
+      el.dataset.depth = row.depth;
+      el.dataset.parentId = row.parentId;
+      el.dataset.isLast = row.isLast ? '1' : '0';
+
+      const handle = document.createElement('button');
+      handle.type = 'button';
+      handle.className = 'handle';
+      handle.setAttribute('aria-label', '拖动以移动"' + node.name + '"');
+      handle.textContent = '\u283F';
+
+      el.innerHTML = guideHTML(row.guides, row.depth, row.isLast);
+      el.appendChild(handle);
+
+      const icon = document.createElement('span');
+      icon.className = 'icon';
+      icon.style.color = ICON_COLOR[row.depth];
+      icon.innerHTML = ICONS[row.depth];
+      el.appendChild(icon);
+
+      const name = document.createElement('span');
+      name.className = 'name';
+      name.textContent = node.name;
+      el.appendChild(name);
+
+      const badge = document.createElement('span');
+      badge.className = 'path-badge';
+      badge.textContent = '(' + row.label + ')';
+      el.appendChild(badge);
+
+      treeListEl.appendChild(el);
+      initRowDrag(el, node, row.depth);
+    });
+  }
+
+  /* =========================================================================
+   * Drag handling
+   * -------------------------------------------------------------------------
+   * Key simplification versus a general tree editor: because a dragged node
+   * is only ever allowed to land among OTHER rows of the *same depth*, and
+   * a node's own descendants always render at a *greater* depth, the
+   * candidate-row search below can never select a descendant of the node
+   * being dragged. That means the usual "don't drop a node into its own
+   * subtree" cycle-check is unnecessary here - the depth filter rules it out
+   * by construction. This is the core trick that keeps this demo simple.
+   * ========================================================================= */
+  function initRowDrag(rowEl, node, depth){
+    const handle = rowEl.querySelector('.handle');
+
+    handle.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      const pointerId = e.pointerId;
+      const startY = e.clientY;
+      const rect = rowEl.getBoundingClientRect();
+      const grabY = startY - rect.top;
+      const startLeft = rect.left;
+      const startWidth = rect.width;
+      let dragging = false;
+      let currentHover = null; // { el, kind, parentId, insertIndex }
+
+      try { handle.setPointerCapture(pointerId); } catch (err) {}
+
+      function candidateRows(){
+        // Every currently rendered row/placeholder at the same depth as the
+        // dragged node, excluding the dragged node's own row.
+        return Array.from(treeListEl.querySelectorAll(
+          '.row[data-depth="' + depth + '"], .placeholder-row[data-depth="' + depth + '"]'
+        )).filter(el => el !== rowEl);
+      }
+
+      function clearHoverVisuals(){
+        treeListEl.querySelectorAll('.drop-target-box').forEach(el => el.classList.remove('drop-target-box'));
+        treeListEl.querySelectorAll('.placeholder-row.drop-hover').forEach(el => el.classList.remove('drop-hover'));
+        dropLine.style.display = 'none';
+        dropHint.style.display = 'none';
+      }
+
+      function updateHover(clientY){
+        const candidates = candidateRows();
+        if (candidates.length === 0){ currentHover = null; clearHoverVisuals(); return; }
+
+        let best = null, bestDist = Infinity;
+        candidates.forEach(el => {
+          const r = el.getBoundingClientRect();
+          const mid = r.top + r.height / 2;
+          const dist = Math.abs(clientY - mid);
+          if (dist < bestDist){ bestDist = dist; best = { el, rect: r, mid }; }
+        });
+        if (!best) { currentHover = null; clearHoverVisuals(); return; }
+
+        clearHoverVisuals();
+        const panelRect = treeListEl.parentElement.getBoundingClientRect();
+
+        if (best.el.classList.contains('placeholder-row')){
+          const parentId = best.el.dataset.placeholderParent;
+          best.el.classList.add('drop-hover');
+          currentHover = { kind: 'placeholder', parentId, insertIndex: 0 };
+
+          const parentNode = findNode(parentId);
+          dropHint.textContent = '\u2192 \u6210\u4e3a\u201c' + (parentNode ? parentNode.name : '') + '\u201d\u7684\u5b50\u9879';
+          dropHint.style.display = 'block';
+          dropHint.style.left = (best.rect.left - panelRect.left + 12) + 'px';
+          dropHint.style.top = (best.rect.top - panelRect.top) + 'px';
+        } else {
+          const targetId = best.el.dataset.id;
+          const targetParentId = best.el.dataset.parentId;
+          const before = clientY < best.mid;
+          const targetLoc = locate(targetId);
+          const targetIndexInParent = targetLoc ? targetLoc.index : 0;
+          const insertIndex = before ? targetIndexInParent : targetIndexInParent + 1;
+          currentHover = { kind: 'line', parentId: targetParentId, insertIndex };
+
+          const lineTop = before ? best.rect.top : best.rect.bottom;
+          dropLine.style.display = 'block';
+          dropLine.style.left = (best.rect.left - panelRect.left) + 'px';
+          dropLine.style.top = (lineTop - panelRect.top - 1) + 'px';
+
+          const targetParentNode = targetParentId === 'ROOT' ? null : findNode(targetParentId);
+          const parentLabel = targetParentNode ? ('"' + targetParentNode.name + '" \u5185') : '\u9876\u5c42';
+          dropHint.textContent = '\u2192 \u63d2\u5165\u5230 ' + parentLabel;
+          dropHint.style.display = 'block';
+          dropHint.style.left = (best.rect.left - panelRect.left + 12) + 'px';
+          dropHint.style.top = (lineTop - panelRect.top) + 'px';
+        }
+      }
+
+      function move(ev){
+        if (!dragging && Math.abs(ev.clientY - startY) > 4){
+          dragging = true;
+          rowEl.classList.add('is-dragging');
+          rowEl.style.position = 'fixed';
+          rowEl.style.left = startLeft + 'px';
+          rowEl.style.width = startWidth + 'px';
+          rowEl.style.top = rect.top + 'px';
+        }
+        if (dragging){
+          rowEl.style.top = (ev.clientY - grabY) + 'px';
+          updateHover(ev.clientY);
+        }
+      }
+
+      function up(){
+        try { handle.releasePointerCapture(pointerId); } catch (err) {}
+        cleanup();
+      }
+      function onLostCapture(){
+        // Safety net: if pointer capture is ever released for a reason other
+        // than a normal pointerup (browser quirk, focus change, etc.), make
+        // sure the row can never get stuck floating mid-drag.
+        cleanup();
+      }
+
+      function cleanup(){
+        if (cleanup.done) return;
+        cleanup.done = true;
+        handle.removeEventListener('pointermove', move);
+        handle.removeEventListener('pointerup', up);
+        handle.removeEventListener('pointercancel', up);
+        handle.removeEventListener('lostpointercapture', onLostCapture);
+
+        if (dragging){
+          clearHoverVisuals();
+          if (currentHover){
+            moveNode(node.id, currentHover.parentId, currentHover.insertIndex);
+          }
+          render();
+        }
+      }
+
+      handle.addEventListener('pointermove', move);
+      handle.addEventListener('pointerup', up);
+      handle.addEventListener('pointercancel', up);
+      handle.addEventListener('lostpointercapture', onLostCapture);
+    });
+  }
+
+  resetBtn.addEventListener('click', () => {
+    tree = deepClone(INITIAL_TREE);
+    render();
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
