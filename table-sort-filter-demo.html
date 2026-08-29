@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<title>Vue 表格排序 + 筛选 + 选中态 Demo</title>
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: #f5f6f8;
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+  #app {
+    width: 100%;
+    max-width: 680px;
+  }
+  h2 {
+    margin: 0 0 16px;
+    color: #2c3e50;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    border-radius: 6px;
+    overflow: hidden;
+    table-layout: fixed;
+  }
+  th, td {
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+  }
+  th {
+    background: #fafafa;
+    color: #333;
+    font-weight: 600;
+    white-space: nowrap;
+    vertical-align: top;
+  }
+
+  /* 表头标题行(可点击排序部分) */
+  .th-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+    margin-bottom: 6px;
+  }
+  .th-label:hover {
+    color: #3b82f6;
+  }
+  .th-label.active {
+    color: #3b82f6;
+  }
+  .arrow {
+    display: inline-block;
+    margin-left: 4px;
+    font-size: 12px;
+    color: #3b82f6;
+  }
+
+  /* 表头筛选输入框 */
+  .th-filter {
+    width: 100%;
+    padding: 4px 6px;
+    font-size: 12px;
+    font-weight: normal;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    outline: none;
+    box-sizing: border-box;
+  }
+  .th-filter:focus {
+    border-color: #3b82f6;
+  }
+  .th-filter.has-value {
+    border-color: #3b82f6;
+    background: #eef5ff;
+  }
+
+  /* 行的 hover / 选中态 */
+  tbody tr {
+    cursor: default;
+    border: 1px solid transparent; /* 占位,避免选中时边框导致高度跳动 */
+  }
+  tbody tr:hover {
+    background: #f3f9fd;
+  }
+  tbody tr.selected {
+    background: #cce8ff;
+    border: 1px solid #99d1ff;
+  }
+  tbody tr.selected:hover {
+    background: #bfe0fb;
+  }
+
+  .empty-row td {
+    text-align: center;
+    color: #999;
+    padding: 24px;
+  }
+
+  .hint {
+    margin-top: 12px;
+    font-size: 13px;
+    color: #888;
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <h2>员工列表(表头筛选 + 排序,点击行选中)</h2>
+  <table>
+    <thead>
+      <tr>
+        <th v-for="col in columns" :key="col.key">
+          <div class="th-label"
+               :class="{ active: sortKey === col.key }"
+               @click="handleSort(col.key)">
+            {{ col.label }}
+            <span class="arrow" v-if="sortKey === col.key">
+              {{ sortOrder === 1 ? '↑' : '↓' }}
+            </span>
+          </div>
+          <input
+            class="th-filter"
+            :class="{ 'has-value': appliedFilters[col.key] }"
+            type="text"
+            v-model="filterInputs[col.key]"
+            :placeholder="'筛选' + col.label"
+            @keyup.enter="applyFilter(col.key)"
+            @click.stop
+          />
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-if="sortedData.length === 0" class="empty-row">
+        <td :colspan="columns.length">没有匹配的数据</td>
+      </tr>
+      <tr v-for="row in sortedData" :key="row.id"
+          :class="{ selected: selectedId === row.id }"
+          @click="selectRow(row.id)">
+        <td v-for="col in columns" :key="col.key">{{ row[col.key] }}</td>
+      </tr>
+    </tbody>
+  </table>
+  <p class="hint">
+    表头标题:同一列重复点击 升序 → 降序 → 取消排序<br>
+    表头输入框:输入后按回车过滤,清空后按回车恢复<br>
+    行:点击选中,类似 Win11 资源管理器
+  </p>
+</div>
+
+<script>
+const { createApp, ref, reactive, computed } = Vue;
+
+createApp({
+  setup() {
+    // 表头配置
+    const columns = [
+      { key: 'name', label: '姓名' },
+      { key: 'age', label: '年龄' },
+      { key: 'dept', label: '部门' },
+      { key: 'salary', label: '薪资' },
+    ];
+
+    // 原始数据,不直接修改它
+    const rawData = ref([
+      { id: 1, name: '张三', age: 28, dept: '技术部', salary: 15000 },
+      { id: 2, name: '李四', age: 35, dept: '市场部', salary: 12000 },
+      { id: 3, name: '王五', age: 22, dept: '技术部', salary: 9000 },
+      { id: 4, name: '赵六', age: 41, dept: '人事部', salary: 11000 },
+      { id: 5, name: '孙七', age: 30, dept: '技术部', salary: 18000 },
+      { id: 6, name: '周八', age: 26, dept: '市场部', salary: 10000 },
+    ]);
+
+    // ---------- 排序 ----------
+    const sortKey = ref('');   // 当前排序字段
+    const sortOrder = ref(1);  // 1 升序, -1 降序, 0 不排序
+
+    function handleSort(key) {
+      if (sortKey.value === key) {
+        // 同一列: 升序 -> 降序 -> 取消
+        if (sortOrder.value === 1) {
+          sortOrder.value = -1;
+        } else if (sortOrder.value === -1) {
+          sortOrder.value = 0;
+          sortKey.value = '';
+        }
+      } else {
+        sortKey.value = key;
+        sortOrder.value = 1;
+      }
+    }
+
+    // ---------- 筛选 ----------
+    // filterInputs: 输入框实时值(双向绑定,还没生效)
+    // appliedFilters: 按下回车后真正用于过滤的值
+    const filterInputs = reactive({ name: '', age: '', dept: '', salary: '' });
+    const appliedFilters = reactive({ name: '', age: '', dept: '', salary: '' });
+
+    function applyFilter(key) {
+      appliedFilters[key] = filterInputs[key].trim();
+    }
+
+    const filteredData = computed(() => {
+      return rawData.value.filter((row) => {
+        return columns.every((col) => {
+          const keyword = appliedFilters[col.key];
+          if (!keyword) return true;
+          // 统一转字符串做包含匹配,数字字段也能按子串筛选,如输入 "1" 筛出所有含 1 的年龄/薪资
+          return String(row[col.key]).toLowerCase().includes(keyword.toLowerCase());
+        });
+      });
+    });
+
+    // ---------- 排序基于筛选后的结果 ----------
+    const sortedData = computed(() => {
+      if (!sortKey.value) return filteredData.value;
+      return [...filteredData.value].sort((a, b) => {
+        let v1 = a[sortKey.value];
+        let v2 = b[sortKey.value];
+
+        // 数字字段按数值比较,其余按字符串比较(支持中文)
+        if (typeof v1 === 'number' && typeof v2 === 'number') {
+          return (v1 - v2) * sortOrder.value;
+        }
+        return String(v1).localeCompare(String(v2), 'zh') * sortOrder.value;
+      });
+    });
+
+    // ---------- 行选中态 ----------
+    const selectedId = ref(null);
+    function selectRow(id) {
+      selectedId.value = id;
+    }
+
+    return {
+      columns, rawData,
+      sortKey, sortOrder, handleSort,
+      filterInputs, appliedFilters, applyFilter,
+      sortedData,
+      selectedId, selectRow,
+    };
+  }
+}).mount('#app');
+</script>
+</body>
+</html>
