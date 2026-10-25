@@ -1,0 +1,845 @@
+{
+  "schemaVersion": 1,
+  "sequence": 100,
+  "products": [
+    {
+      "id": "p1",
+      "title": "北欧简约陶瓷咖啡杯",
+      "shop": "山间生活旗舰店",
+      "category": "家居日用",
+      "icon": "☕",
+      "color": "#eee5da",
+      "description": "把日常的一杯，变成温柔的小仪式。",
+      "skus": [
+        {
+          "id": "s1a",
+          "name": "奶油白 · 350ml",
+          "price": 5490,
+          "groupPrice": 3990,
+          "stock": 80
+        },
+        {
+          "id": "s1b",
+          "name": "摩卡棕 · 450ml",
+          "price": 7490,
+          "groupPrice": 5990,
+          "stock": 50
+        }
+      ]
+    },
+    {
+      "id": "p2",
+      "title": "轻量透气休闲运动鞋",
+      "shop": "轻步运动专营店",
+      "category": "服饰鞋包",
+      "icon": "👟",
+      "color": "#e6eaf0",
+      "description": "舒适缓震，轻松走过城市每一条街。",
+      "skus": [
+        {
+          "id": "s2a",
+          "name": "米白 · 42码",
+          "price": 14400,
+          "groupPrice": 12900,
+          "stock": 80
+        },
+        {
+          "id": "s2b",
+          "name": "黑色 · 43码",
+          "price": 16400,
+          "groupPrice": 14900,
+          "stock": 50
+        }
+      ]
+    },
+    {
+      "id": "p3",
+      "title": "云南高山阳光蓝莓",
+      "shop": "田野鲜果直营店",
+      "category": "生鲜食品",
+      "icon": "🫐",
+      "color": "#e6e2f0",
+      "description": "果香清甜，精选产地直达餐桌。",
+      "skus": [
+        {
+          "id": "s3a",
+          "name": "精选装 · 500g",
+          "price": 6490,
+          "groupPrice": 4990,
+          "stock": 80
+        },
+        {
+          "id": "s3b",
+          "name": "家庭装 · 1kg",
+          "price": 8490,
+          "groupPrice": 6990,
+          "stock": 50
+        }
+      ]
+    },
+    {
+      "id": "p4",
+      "title": "无线降噪头戴式耳机",
+      "shop": "声场数码旗舰店",
+      "category": "数码好物",
+      "icon": "🎧",
+      "color": "#e4e9e7",
+      "description": "给自己一段安静，听见音乐的细节。",
+      "skus": [
+        {
+          "id": "s4a",
+          "name": "雾灰 · 标准版",
+          "price": 21400,
+          "groupPrice": 19900,
+          "stock": 80
+        },
+        {
+          "id": "s4b",
+          "name": "深黑 · 升级版",
+          "price": 23400,
+          "groupPrice": 21900,
+          "stock": 50
+        }
+      ]
+    },
+    {
+      "id": "p5",
+      "title": "原木香氛蜡烛礼盒",
+      "shop": "慢时光家居店",
+      "category": "家居日用",
+      "icon": "🕯️",
+      "color": "#f2e8dc",
+      "description": "木质暖香，在家的每一刻都放松。",
+      "skus": [
+        {
+          "id": "s5a",
+          "name": "雪松香 · 180g",
+          "price": 8400,
+          "groupPrice": 6900,
+          "stock": 80
+        },
+        {
+          "id": "s5b",
+          "name": "檀木香 · 250g",
+          "price": 10400,
+          "groupPrice": 8900,
+          "stock": 50
+        }
+      ]
+    },
+    {
+      "id": "p6",
+      "title": "通勤大容量帆布包",
+      "shop": "布语原创生活店",
+      "category": "服饰鞋包",
+      "icon": "👜",
+      "color": "#e8e4dd",
+      "description": "简约耐用，装下工作也装下生活。",
+      "skus": [
+        {
+          "id": "s6a",
+          "name": "原色 · 标准款",
+          "price": 7400,
+          "groupPrice": 5900,
+          "stock": 80
+        },
+        {
+          "id": "s6b",
+          "name": "黑色 · 加大款",
+          "price": 9400,
+          "groupPrice": 7900,
+          "stock": 50
+        }
+      ]
+    }
+  ],
+  "coupons": [
+    {
+      "id": "c1",
+      "name": "满50减5",
+      "min": 5000,
+      "amount": 500,
+      "orderId": null
+    },
+    {
+      "id": "c2",
+      "name": "满100减12",
+      "min": 10000,
+      "amount": 1200,
+      "orderId": null
+    },
+    {
+      "id": "c3",
+      "name": "满200减25",
+      "min": 20000,
+      "amount": 2500,
+      "orderId": null
+    }
+  ],
+  "addresses": [
+    {
+      "name": "林小满",
+      "phone": "13800000000",
+      "detail": "广东省佛山市南海区示例路88号（演示地址）"
+    }
+  ],
+  "orders": [
+    {
+      "id": "PX2026102500001",
+      "productId": "p1",
+      "skuId": "s1a",
+      "title": "北欧简约陶瓷咖啡杯",
+      "shop": "山间生活旗舰店",
+      "icon": "☕",
+      "color": "#eee5da",
+      "spec": "奶油白 · 350ml",
+      "qty": 1,
+      "mode": "single",
+      "unitPrice": 5490,
+      "subtotal": 5490,
+      "shipping": 600,
+      "discount": 0,
+      "total": 6090,
+      "couponId": "",
+      "address": {
+        "name": "林小满",
+        "phone": "13800000000",
+        "detail": "广东省佛山市南海区示例路88号（演示地址）"
+      },
+      "note": "",
+      "status": "unpaid",
+      "payment": "unpaid",
+      "group": null,
+      "createdAt": -300000,
+      "payDeadline": 1500000,
+      "events": [
+        {
+          "time": -300000,
+          "text": "示例订单创建",
+          "actor": "buyer"
+        }
+      ],
+      "logistics": [],
+      "afterSales": [],
+      "afterSale": null,
+      "review": null,
+      "stockReleased": false
+    },
+    {
+      "id": "PX2026102500002",
+      "productId": "p2",
+      "skuId": "s2a",
+      "title": "轻量透气休闲运动鞋",
+      "shop": "轻步运动专营店",
+      "icon": "👟",
+      "color": "#e6eaf0",
+      "spec": "米白 · 42码",
+      "qty": 1,
+      "mode": "group",
+      "unitPrice": 12900,
+      "subtotal": 12900,
+      "shipping": 0,
+      "discount": 0,
+      "total": 12900,
+      "couponId": "",
+      "address": {
+        "name": "林小满",
+        "phone": "13800000000",
+        "detail": "广东省佛山市南海区示例路88号（演示地址）"
+      },
+      "note": "",
+      "status": "grouping",
+      "payment": "paid",
+      "group": {
+        "count": 1,
+        "required": 2,
+        "status": "waiting",
+        "deadline": 82800000
+      },
+      "createdAt": -7200000,
+      "payDeadline": 1500000,
+      "events": [
+        {
+          "time": -3600000,
+          "text": "模拟支付完成",
+          "actor": "buyer"
+        },
+        {
+          "time": -7200000,
+          "text": "示例订单创建",
+          "actor": "buyer"
+        }
+      ],
+      "logistics": [],
+      "afterSales": [],
+      "afterSale": null,
+      "review": null,
+      "stockReleased": false,
+      "paidAt": -3600000,
+      "paymentMethod": "微信支付"
+    },
+    {
+      "id": "PX2026102500003",
+      "productId": "p3",
+      "skuId": "s3a",
+      "title": "云南高山阳光蓝莓",
+      "shop": "田野鲜果直营店",
+      "icon": "🫐",
+      "color": "#e6e2f0",
+      "spec": "精选装 · 500g",
+      "qty": 1,
+      "mode": "group",
+      "unitPrice": 4990,
+      "subtotal": 4990,
+      "shipping": 600,
+      "discount": 0,
+      "total": 5590,
+      "couponId": "",
+      "address": {
+        "name": "林小满",
+        "phone": "13800000000",
+        "detail": "广东省佛山市南海区示例路88号（演示地址）"
+      },
+      "note": "",
+      "status": "toship",
+      "payment": "paid",
+      "group": {
+        "count": 2,
+        "required": 2,
+        "status": "success",
+        "deadline": 79200000
+      },
+      "createdAt": -10800000,
+      "payDeadline": 1500000,
+      "events": [
+        {
+          "time": -7200000,
+          "text": "模拟支付完成",
+          "actor": "buyer"
+        },
+        {
+          "time": -10800000,
+          "text": "示例订单创建",
+          "actor": "buyer"
+        }
+      ],
+      "logistics": [],
+      "afterSales": [],
+      "afterSale": null,
+      "review": null,
+      "stockReleased": false,
+      "paidAt": -7200000,
+      "paymentMethod": "微信支付"
+    },
+    {
+      "id": "PX2026102500004",
+      "productId": "p4",
+      "skuId": "s4a",
+      "title": "无线降噪头戴式耳机",
+      "shop": "声场数码旗舰店",
+      "icon": "🎧",
+      "color": "#e4e9e7",
+      "spec": "雾灰 · 标准版",
+      "qty": 1,
+      "mode": "single",
+      "unitPrice": 21400,
+      "subtotal": 21400,
+      "shipping": 0,
+      "discount": 0,
+      "total": 21400,
+      "couponId": "",
+      "address": {
+        "name": "林小满",
+        "phone": "13800000000",
+        "detail": "广东省佛山市南海区示例路88号（演示地址）"
+      },
+      "note": "",
+      "status": "shipped",
+      "payment": "paid",
+      "group": null,
+      "createdAt": -14400000,
+      "payDeadline": 1500000,
+      "events": [
+        {
+          "time": -10800000,
+          "text": "模拟支付完成",
+          "actor": "buyer"
+        },
+        {
+          "time": -14400000,
+          "text": "示例订单创建",
+          "actor": "buyer"
+        }
+      ],
+      "logistics": [
+        {
+          "time": -3600000,
+          "text": "商家已发货，等待揽收"
+        }
+      ],
+      "afterSales": [],
+      "afterSale": null,
+      "review": null,
+      "stockReleased": false,
+      "paidAt": -10800000,
+      "paymentMethod": "微信支付",
+      "carrier": "顺丰速运",
+      "tracking": "SF10000000003",
+      "shippedAt": -3600000
+    },
+    {
+      "id": "PX2026102500005",
+      "productId": "p5",
+      "skuId": "s5a",
+      "title": "原木香氛蜡烛礼盒",
+      "shop": "慢时光家居店",
+      "icon": "🕯️",
+      "color": "#f2e8dc",
+      "spec": "雪松香 · 180g",
+      "qty": 1,
+      "mode": "group",
+      "unitPrice": 6900,
+      "subtotal": 6900,
+      "shipping": 600,
+      "discount": 0,
+      "total": 7500,
+      "couponId": "",
+      "address": {
+        "name": "林小满",
+        "phone": "13800000000",
+        "detail": "广东省佛山市南海区示例路88号（演示地址）"
+      },
+      "note": "",
+      "status": "completed",
+      "payment": "paid",
+      "group": {
+        "count": 2,
+        "required": 2,
+        "status": "success",
+        "deadline": 72000000
+      },
+      "createdAt": -18000000,
+      "payDeadline": 1500000,
+      "events": [
+        {
+          "time": -14400000,
+          "text": "模拟支付完成",
+          "actor": "buyer"
+        },
+        {
+          "time": -18000000,
+          "text": "示例订单创建",
+          "actor": "buyer"
+        }
+      ],
+      "logistics": [
+        {
+          "time": -3600000,
+          "text": "商家已发货，等待揽收"
+        }
+      ],
+      "afterSales": [],
+      "afterSale": null,
+      "review": null,
+      "stockReleased": false,
+      "paidAt": -14400000,
+      "paymentMethod": "微信支付",
+      "carrier": "顺丰速运",
+      "tracking": "SF10000000004",
+      "shippedAt": -3600000,
+      "completedAt": -1800000
+    },
+    {
+      "id": "PX2026102500006",
+      "productId": "p6",
+      "skuId": "s6a",
+      "title": "通勤大容量帆布包",
+      "shop": "布语原创生活店",
+      "icon": "👜",
+      "color": "#e8e4dd",
+      "spec": "原色 · 标准款",
+      "qty": 1,
+      "mode": "group",
+      "unitPrice": 5900,
+      "subtotal": 5900,
+      "shipping": 600,
+      "discount": 0,
+      "total": 6500,
+      "couponId": "",
+      "address": {
+        "name": "林小满",
+        "phone": "13800000000",
+        "detail": "广东省佛山市南海区示例路88号（演示地址）"
+      },
+      "note": "",
+      "status": "toship",
+      "payment": "paid",
+      "group": {
+        "count": 2,
+        "required": 2,
+        "status": "success",
+        "deadline": 68400000
+      },
+      "createdAt": -21600000,
+      "payDeadline": 1500000,
+      "events": [
+        {
+          "time": -18000000,
+          "text": "模拟支付完成",
+          "actor": "buyer"
+        },
+        {
+          "time": -21600000,
+          "text": "示例订单创建",
+          "actor": "buyer"
+        }
+      ],
+      "logistics": [],
+      "afterSales": [],
+      "afterSale": {
+        "id": "AS005",
+        "type": "refund",
+        "status": "pending",
+        "reason": "尺码或规格不适合，申请售后",
+        "amount": 6500,
+        "createdAt": -100000
+      },
+      "review": null,
+      "stockReleased": false,
+      "paidAt": -18000000,
+      "paymentMethod": "微信支付"
+    },
+    {
+      "id": "PX2026102500007",
+      "productId": "p1",
+      "skuId": "s1a",
+      "title": "北欧简约陶瓷咖啡杯",
+      "shop": "山间生活旗舰店",
+      "icon": "☕",
+      "color": "#eee5da",
+      "spec": "奶油白 · 350ml",
+      "qty": 1,
+      "mode": "single",
+      "unitPrice": 5490,
+      "subtotal": 5490,
+      "shipping": 600,
+      "discount": 0,
+      "total": 6090,
+      "couponId": "",
+      "address": {
+        "name": "林小满",
+        "phone": "13800000000",
+        "detail": "广东省佛山市南海区示例路88号（演示地址）"
+      },
+      "note": "",
+      "status": "shipped",
+      "payment": "paid",
+      "group": null,
+      "createdAt": -25200000,
+      "payDeadline": 1500000,
+      "events": [
+        {
+          "time": -21600000,
+          "text": "模拟支付完成",
+          "actor": "buyer"
+        },
+        {
+          "time": -25200000,
+          "text": "示例订单创建",
+          "actor": "buyer"
+        }
+      ],
+      "logistics": [
+        {
+          "time": -3600000,
+          "text": "商家已发货，等待揽收"
+        }
+      ],
+      "afterSales": [],
+      "afterSale": {
+        "id": "AS006",
+        "type": "return",
+        "status": "returning",
+        "reason": "尺码或规格不适合，申请售后",
+        "amount": 6090,
+        "createdAt": -100000
+      },
+      "review": null,
+      "stockReleased": false,
+      "paidAt": -21600000,
+      "paymentMethod": "微信支付",
+      "carrier": "顺丰速运",
+      "tracking": "SF10000000006",
+      "shippedAt": -3600000
+    },
+    {
+      "id": "PX2026102500008",
+      "productId": "p2",
+      "skuId": "s2a",
+      "title": "轻量透气休闲运动鞋",
+      "shop": "轻步运动专营店",
+      "icon": "👟",
+      "color": "#e6eaf0",
+      "spec": "米白 · 42码",
+      "qty": 1,
+      "mode": "group",
+      "unitPrice": 12900,
+      "subtotal": 12900,
+      "shipping": 0,
+      "discount": 0,
+      "total": 12900,
+      "couponId": "",
+      "address": {
+        "name": "林小满",
+        "phone": "13800000000",
+        "detail": "广东省佛山市南海区示例路88号（演示地址）"
+      },
+      "note": "",
+      "status": "completed",
+      "payment": "paid",
+      "group": {
+        "count": 2,
+        "required": 2,
+        "status": "success",
+        "deadline": 61200000
+      },
+      "createdAt": -28800000,
+      "payDeadline": 1500000,
+      "events": [
+        {
+          "time": -25200000,
+          "text": "模拟支付完成",
+          "actor": "buyer"
+        },
+        {
+          "time": -28800000,
+          "text": "示例订单创建",
+          "actor": "buyer"
+        }
+      ],
+      "logistics": [
+        {
+          "time": -3600000,
+          "text": "商家已发货，等待揽收"
+        }
+      ],
+      "afterSales": [],
+      "afterSale": null,
+      "review": {
+        "rating": 5,
+        "content": "包装完好，使用体验很满意，推荐购买。",
+        "time": 0
+      },
+      "stockReleased": false,
+      "paidAt": -25200000,
+      "paymentMethod": "微信支付",
+      "carrier": "顺丰速运",
+      "tracking": "SF10000000007",
+      "shippedAt": -3600000,
+      "completedAt": -1800000
+    },
+    {
+      "id": "PX2026102500009",
+      "productId": "p3",
+      "skuId": "s3a",
+      "title": "云南高山阳光蓝莓",
+      "shop": "田野鲜果直营店",
+      "icon": "🫐",
+      "color": "#e6e2f0",
+      "spec": "精选装 · 500g",
+      "qty": 1,
+      "mode": "group",
+      "unitPrice": 4990,
+      "subtotal": 4990,
+      "shipping": 600,
+      "discount": 0,
+      "total": 5590,
+      "couponId": "",
+      "address": {
+        "name": "林小满",
+        "phone": "13800000000",
+        "detail": "广东省佛山市南海区示例路88号（演示地址）"
+      },
+      "note": "",
+      "status": "closed",
+      "payment": "unpaid",
+      "group": {
+        "count": 2,
+        "required": 2,
+        "status": "success",
+        "deadline": 72000000
+      },
+      "createdAt": -32400000,
+      "payDeadline": 1500000,
+      "events": [
+        {
+          "time": -32400000,
+          "text": "示例订单创建",
+          "actor": "buyer"
+        }
+      ],
+      "logistics": [],
+      "afterSales": [],
+      "afterSale": null,
+      "review": null,
+      "stockReleased": true,
+      "closeReason": "买家取消订单"
+    },
+    {
+      "id": "PX2026102500010",
+      "productId": "p4",
+      "skuId": "s4a",
+      "title": "无线降噪头戴式耳机",
+      "shop": "声场数码旗舰店",
+      "icon": "🎧",
+      "color": "#e4e9e7",
+      "spec": "雾灰 · 标准版",
+      "qty": 1,
+      "mode": "single",
+      "unitPrice": 21400,
+      "subtotal": 21400,
+      "shipping": 0,
+      "discount": 0,
+      "total": 21400,
+      "couponId": "",
+      "address": {
+        "name": "林小满",
+        "phone": "13800000000",
+        "detail": "广东省佛山市南海区示例路88号（演示地址）"
+      },
+      "note": "",
+      "status": "completed",
+      "payment": "paid",
+      "group": null,
+      "createdAt": -36000000,
+      "payDeadline": 1500000,
+      "events": [
+        {
+          "time": -32400000,
+          "text": "模拟支付完成",
+          "actor": "buyer"
+        },
+        {
+          "time": -36000000,
+          "text": "示例订单创建",
+          "actor": "buyer"
+        }
+      ],
+      "logistics": [
+        {
+          "time": -3600000,
+          "text": "商家已发货，等待揽收"
+        }
+      ],
+      "afterSales": [],
+      "afterSale": null,
+      "review": null,
+      "stockReleased": false,
+      "paidAt": -32400000,
+      "paymentMethod": "微信支付",
+      "carrier": "顺丰速运",
+      "tracking": "SF10000000009",
+      "shippedAt": -3600000,
+      "completedAt": -1800000
+    },
+    {
+      "id": "PX2026102500011",
+      "productId": "p5",
+      "skuId": "s5a",
+      "title": "原木香氛蜡烛礼盒",
+      "shop": "慢时光家居店",
+      "icon": "🕯️",
+      "color": "#f2e8dc",
+      "spec": "雪松香 · 180g",
+      "qty": 1,
+      "mode": "group",
+      "unitPrice": 6900,
+      "subtotal": 6900,
+      "shipping": 600,
+      "discount": 0,
+      "total": 7500,
+      "couponId": "",
+      "address": {
+        "name": "林小满",
+        "phone": "13800000000",
+        "detail": "广东省佛山市南海区示例路88号（演示地址）"
+      },
+      "note": "",
+      "status": "unpaid",
+      "payment": "unpaid",
+      "group": {
+        "count": 2,
+        "required": 2,
+        "status": "success",
+        "deadline": 72000000
+      },
+      "createdAt": -300000,
+      "payDeadline": 1500000,
+      "events": [
+        {
+          "time": -300000,
+          "text": "示例订单创建",
+          "actor": "buyer"
+        }
+      ],
+      "logistics": [],
+      "afterSales": [],
+      "afterSale": null,
+      "review": null,
+      "stockReleased": false
+    },
+    {
+      "id": "PX2026102500012",
+      "productId": "p6",
+      "skuId": "s6a",
+      "title": "通勤大容量帆布包",
+      "shop": "布语原创生活店",
+      "icon": "👜",
+      "color": "#e8e4dd",
+      "spec": "原色 · 标准款",
+      "qty": 1,
+      "mode": "group",
+      "unitPrice": 5900,
+      "subtotal": 5900,
+      "shipping": 600,
+      "discount": 0,
+      "total": 6500,
+      "couponId": "",
+      "address": {
+        "name": "林小满",
+        "phone": "13800000000",
+        "detail": "广东省佛山市南海区示例路88号（演示地址）"
+      },
+      "note": "",
+      "status": "grouping",
+      "payment": "paid",
+      "group": {
+        "count": 1,
+        "required": 2,
+        "status": "waiting",
+        "deadline": 46800000
+      },
+      "createdAt": -43200000,
+      "payDeadline": 1500000,
+      "events": [
+        {
+          "time": -39600000,
+          "text": "模拟支付完成",
+          "actor": "buyer"
+        },
+        {
+          "time": -43200000,
+          "text": "示例订单创建",
+          "actor": "buyer"
+        }
+      ],
+      "logistics": [],
+      "afterSales": [],
+      "afterSale": null,
+      "review": null,
+      "stockReleased": false,
+      "paidAt": -39600000,
+      "paymentMethod": "微信支付"
+    }
+  ]
+}
