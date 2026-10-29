@@ -1,0 +1,327 @@
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  overflow: hidden;
+  background: #a7bfbd;
+  font-family: Inter, "Microsoft YaHei", sans-serif;
+  color: #fff;
+}
+#game {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+#hud {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+header {
+  position: absolute;
+  top: 28px;
+  left: 30px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.brand {
+  font-size: 29px;
+  font-weight: 900;
+  border: 2px solid #f6b14c;
+  padding: 3px 9px;
+  border-radius: 12px;
+}
+.brand span {
+  color: #ffc568;
+}
+header b {
+  font-size: 20px;
+}
+header small {
+  display: block;
+  font-size: 9px;
+  letter-spacing: 3px;
+  margin-top: 5px;
+}
+.badge {
+  margin-left: 15px;
+  background: #173d35bf;
+  border: 1px solid #ffffff30;
+  border-radius: 20px;
+  padding: 7px 13px;
+  font-size: 11px;
+}
+.mission {
+  position: absolute;
+  top: 113px;
+  left: 30px;
+  width: 300px;
+  background: #122b2be8;
+  padding: 22px;
+  border: 1px solid #ffffff20;
+  border-radius: 16px;
+  box-shadow: 0 8px 30px #10262125;
+}
+.eyebrow {
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: #ffc36d;
+}
+h2 {
+  font-size: 19px;
+  margin: 15px 0 10px;
+}
+.mission p {
+  font-size: 12px;
+  color: #c7d5ce;
+  line-height: 1.8;
+  min-height: 42px;
+}
+.progress {
+  height: 3px;
+  background: #ffffff20;
+  margin: 18px 0 13px;
+}
+.progress i {
+  display: block;
+  height: 100%;
+  background: #ffc36d;
+  width: 10%;
+  transition: width 0.5s;
+}
+.row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+}
+.row b {
+  color: #ffcb7a;
+}
+.wallet {
+  position: absolute;
+  right: 30px;
+  top: 30px;
+  text-align: right;
+}
+.wallet small,
+.wallet span {
+  display: block;
+  color: #e2f1e9;
+  font-size: 11px;
+}
+.wallet b {
+  display: block;
+  font-size: 30px;
+  margin: 4px 0;
+}
+.bottom {
+  position: absolute;
+  left: 30px;
+  bottom: 28px;
+  display: flex;
+  gap: 22px;
+  align-items: flex-end;
+}
+.mapbox {
+  background: #102c2be8;
+  padding: 9px;
+  border: 1px solid #ffffff35;
+  border-radius: 15px;
+}
+.mapbox canvas {
+  display: block;
+  width: 175px;
+  height: 175px;
+  border-radius: 8px;
+}
+.mapbox span {
+  display: block;
+  font-size: 9px;
+  padding: 8px 3px 0;
+  letter-spacing: 2px;
+  color: #c5d9cf;
+}
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-shadow: 0 2px 5px #000;
+}
+.controls b {
+  font-size: 19px;
+  margin-bottom: 6px;
+}
+.controls span {
+  font-size: 11px;
+  color: #f0f4e9;
+}
+.speed {
+  position: absolute;
+  bottom: 32px;
+  right: 35px;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.speed b {
+  font-size: 64px;
+  font-weight: 400;
+  letter-spacing: -3px;
+}
+.speed span {
+  font-size: 10px;
+}
+#prompt {
+  position: absolute;
+  bottom: 130px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #102b2be8;
+  border: 1px solid #ffffff40;
+  padding: 12px 22px;
+  border-radius: 24px;
+  font-size: 13px;
+  display: none;
+  white-space: nowrap;
+}
+#toast {
+  position: absolute;
+  top: 35px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #123a32;
+  padding: 12px 20px;
+  border-radius: 9px;
+  opacity: 0;
+  transition: opacity 0.3s;
+  font-size: 13px;
+}
+#stats {
+  position: absolute;
+  right: 25px;
+  top: 160px;
+  font: 11px monospace;
+  background: #102b2bc9;
+  padding: 10px;
+  display: none;
+  white-space: pre-line;
+}
+.smallbtn {
+  pointer-events: auto;
+  position: absolute;
+  right: 30px;
+  top: 117px;
+  border: 1px solid #ffffff50;
+  background: #19372bbb;
+  color: white;
+  padding: 8px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+#overlay {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    #0c2325f5 0%,
+    #0c2325cf 35%,
+    #0c232520 100%
+  );
+  display: flex;
+  align-items: center;
+  padding: 8vw;
+}
+.intro {
+  max-width: 470px;
+}
+h1 {
+  font-size: clamp(45px, 5.5vw, 82px);
+  line-height: 1.15;
+  letter-spacing: -3px;
+  margin: 25px 0;
+}
+h1 em {
+  font-style: normal;
+  color: #ffc36d;
+}
+.intro p {
+  font-size: 15px;
+  line-height: 2;
+  color: #c4d3cd;
+  margin-bottom: 30px;
+}
+#play {
+  width: 270px;
+  display: flex;
+  justify-content: space-between;
+  background: #ffc36d;
+  color: #183030;
+  padding: 17px 22px;
+  border: 0;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.options {
+  display: flex;
+  gap: 22px;
+  font-size: 12px;
+  margin: 22px 0;
+  align-items: center;
+}
+select {
+  background: #183634;
+  color: white;
+  border: 1px solid #617771;
+  padding: 5px;
+  border-radius: 5px;
+}
+#saveInfo {
+  font-size: 11px;
+  color: #aebfb7;
+}
+.textbtn {
+  display: block;
+  background: none;
+  border: 0;
+  color: #9cafa7;
+  padding: 14px 0;
+  cursor: pointer;
+  font-size: 11px;
+}
+.introtag {
+  position: absolute;
+  right: 35px;
+  bottom: 35px;
+  font-size: 10px;
+  line-height: 2;
+  letter-spacing: 2px;
+}
+@media (max-width: 800px) {
+  .mission {
+    width: 240px;
+    top: 100px;
+    padding: 15px;
+  }
+  .controls {
+    display: none;
+  }
+  .mapbox canvas {
+    width: 130px;
+    height: 130px;
+  }
+  header .badge {
+    display: none;
+  }
+  .wallet {
+    right: 15px;
+  }
+  header,
+  .mission {
+    left: 15px;
+  }
+}

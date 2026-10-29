@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>街角漫游 · City Sandbox</title>
+    <script type="module" crossorigin src="/assets/index-BKwjp8RL.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-D0nMp6vA.css">
+  </head>
+  <body>
+    <canvas id="game"></canvas>
+    <div id="hud">
+      <header>
+        <span class="brand">C<span>↗</span></span>
+        <div><b>街角漫游</b><small>CITY SANDBOX / 01</small></div>
+        <span class="badge">自由探索</span>
+      </header>
+      <aside class="mission">
+        <div class="eyebrow">CITY COURIER / 城市配送</div>
+        <h2 id="missionTitle">领取你的第一份配送</h2>
+        <p id="missionText">前往黄色光圈，按 F 领取包裹。</p>
+        <div class="progress"><i id="progress"></i></div>
+        <div class="row">
+          <span id="phase">01 / 领取包裹</span><b id="reward">奖励 ¥ 200</b>
+        </div>
+      </aside>
+      <div class="wallet">
+        <small>账户余额</small><b id="money">¥ 0</b
+        ><span id="count">0 次配送完成</span>
+      </div>
+      <div class="bottom">
+        <div class="mapbox">
+          <canvas id="map" width="220" height="220"></canvas
+          ><span>N ↑ &nbsp; / &nbsp; 城市导航</span>
+        </div>
+        <div class="controls">
+          <b id="mode">步行探索</b><span>WASD 移动 · Shift 奔跑 · E 上下车</span
+          ><span>鼠标拖动 / 双击锁定视角 · F 交互</span
+          ><span>空格 手刹 · R 安全复位 · Esc 暂停</span>
+        </div>
+      </div>
+      <div class="speed"><b id="speed">00</b><span id="unit">KM/H</span></div>
+      <div id="prompt"></div>
+      <div id="toast"></div>
+      <div id="stats"></div>
+      <button id="pauseBtn" class="smallbtn">Ⅱ 暂停</button>
+    </div>
+    <div id="overlay">
+      <div class="intro">
+        <div class="eyebrow">A SMALL CITY. YOUR NEXT TURN.</div>
+        <h1>下一站，<br /><em>随心出发。</em></h1>
+        <p>
+          步行穿过街角，驾驶你的橙色小车。<br />接一份配送，也可以只是看看这座城市。
+        </p>
+        <button id="play">进入城市 <span>↗</span></button>
+        <div class="options">
+          <label
+            >画质
+            <select id="quality">
+              <option value="low">流畅</option>
+              <option value="high" selected>标准</option>
+            </select></label
+          ><label><input type="checkbox" id="debug" /> 性能面板</label>
+        </div>
+        <small id="saveInfo">自动保存进度 · 离线可玩 · 键鼠操作</small
+        ><button id="reset" class="textbtn">重新开始（清除存档）</button>
+      </div>
+      <div class="introtag">
+        01 — 城市探索原型<br />THIRD PERSON / DRIVE / DELIVER
+      </div>
+    </div>
+  </body>
+</html>
