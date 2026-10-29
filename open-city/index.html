@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Open City · 开放世界原型</title>
+</head>
+<body>
+  <canvas id="game"></canvas>
+
+  <div id="hud" class="hidden">
+    <div class="panel" id="mission">
+      <div id="missionTitle">任务</div>
+      <div id="missionText">…</div>
+      <div id="missionDist"></div>
+    </div>
+    <div class="panel" id="money">$ 0</div>
+    <canvas id="minimap" width="180" height="180"></canvas>
+    <div class="panel" id="speedo"><span id="speed">0</span><small> km/h</small></div>
+    <div id="prompt" class="hidden"></div>
+    <div id="toast" class="hidden"></div>
+    <div id="fps"></div>
+  </div>
+
+  <div id="overlay">
+    <div class="card">
+      <h1>OPEN CITY</h1>
+      <p class="sub">开放世界原型 · Three.js + Rapier + Vite</p>
+      <p id="loadState">正在加载物理引擎与城市……</p>
+      <div id="menu" class="hidden">
+        <div class="keys">
+          <div><b>W A S D</b> 移动 / 油门·转向</div>
+          <div><b>Shift</b> 奔跑</div>
+          <div><b>Space</b> 跳跃 / 手刹</div>
+          <div><b>鼠标</b> 环顾四周</div>
+          <div><b>E</b> 上车 / 下车</div>
+          <div><b>R</b> 将载具重置到最近车道</div>
+          <div><b>← → ↑ ↓</b> 无鼠标时的视角控制</div>
+        </div>
+        <button id="startBtn">开始 / 继续游戏</button>
+        <button id="resetBtn" class="ghost">清除存档并重新开始</button>
+        <p class="tip">提示：第一单——走到闪烁的橙色轿车旁按 E 上车，沿东面大路开向小地图上的黄点。</p>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
