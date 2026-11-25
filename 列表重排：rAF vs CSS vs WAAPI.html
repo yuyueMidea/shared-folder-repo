@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>列表重排：rAF vs CSS vs WAAPI</title>
+<style>
+:root{
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#f6f5f1;--card:#fff;--text:#1d1d1b;--muted:#6b6a64;--line:#e3e1d9;--accent:#c2410c;
+  --c1:#e8590c;--c2:#2f9e44;--c3:#1971c2;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#161614;--card:#211f1d;--text:#efede6;--muted:#9a978d;--line:#35332f;--accent:#fb923c;}}
+:root[data-theme="dark"]{--bg:#161614;--card:#211f1d;--text:#efede6;--muted:#9a978d;--line:#35332f;--accent:#fb923c;}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.6 system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:1000px;margin:0 auto;padding:24px 16px 48px}
+h1{font-size:22px;margin:0 0 4px}
+.sub{color:var(--muted);margin:0 0 18px}
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px}
+button{font:inherit;padding:8px 14px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--text);cursor:pointer}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+button:active{transform:scale(.97)}
+label{color:var(--muted);font-size:13px;display:flex;align-items:center;gap:8px}
+.beat{height:14px;border-radius:7px;background:var(--card);border:1px solid var(--line);position:relative;margin:4px 0 18px}
+.beat i{position:absolute;top:2px;left:0;width:8px;height:8px;border-radius:50%;background:var(--accent)}
+.beat small{position:absolute;right:8px;top:-1px;font-size:10px;color:var(--muted);line-height:14px}
+.cols{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media(max-width:720px){.cols{grid-template-columns:1fr}}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
+.panel h2{font-size:15px;margin:0}
+.panel p{font-size:12px;color:var(--muted);margin:2px 0 10px}
+.panel .tag{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+li{height:38px;border-radius:8px;display:flex;align-items:center;padding:0 12px;color:#fff;font-weight:600;font-size:14px;will-change:transform}
+.note{margin-top:20px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px;color:var(--muted)}
+.note b{color:var(--text)}
+</style>
+</head>
+<body>
+<main>
+<h1>列表重排：三种驱动方式</h1>
+<p class="sub">同一份数据、同一个 FLIP 套路，只有“谁来驱动每一帧”不同。</p>
+
+<div class="bar">
+  <button class="primary" id="shuffle">随机重排</button>
+  <button id="block">重排 + 阻塞主线程 500ms</button>
+  <label>时长 <input type="range" id="dur" min="200" max="1500" step="50" value="700"> <span id="durv">700ms</span></label>
+</div>
+<div class="beat"><i id="dot"></i><small>主线程心跳（rAF 驱动，主线程卡住时会冻结）</small></div>
+
+<div class="cols">
+  <section class="panel"><h2><span class="tag" style="background:var(--c1)"></span>rAF</h2>
+    <p>JS 每帧手算 transform，全程在主线程</p><ul id="raf"></ul></section>
+  <section class="panel"><h2><span class="tag" style="background:var(--c2)"></span>CSS Transition</h2>
+    <p>JS 只设起点，终点交给 transition</p><ul id="css"></ul></section>
+  <section class="panel"><h2><span class="tag" style="background:var(--c3)"></span>WAAPI</h2>
+    <p>el.animate() 声明关键帧，浏览器驱动</p><ul id="waapi"></ul></section>
+</div>
+
+<div class="note">
+  <b>怎么玩：</b>先点“随机重排”，三列效果几乎一样。再连点几次，观察动画被打断时的衔接（FLIP 从“当前视觉位置”出发，所以不会跳变）。
+  最后点“重排 + 阻塞主线程”：<b>rAF 列会冻结</b>，直到阻塞结束才跳到当前进度；<b>CSS / WAAPI 两列因为只改 transform，通常由合成器线程继续推进</b>，保持流畅（具体表现取决于浏览器）。
+  顶部的小圆点也由 rAF 驱动，用来直观显示主线程何时被卡住。
+</div>
+</main>
+
+<script>
+const N = 8, COLORS = ['#e8590c','#f08c00','#2f9e44','#0ca678','#1971c2','#7048e8','#c2255c','#495057'];
+let order = [...Array(N).keys()];
+let D = 700;
+const EASE = 'cubic-bezier(.2,.8,.2,1)';
+
+/* ---------- 三种“播放”实现：都接收 (el, dx, dy) ---------- */
+const rafActive = new Map(); let rafLoopId = null;
+function rafLoop(ts){
+  const now = performance.now();
+  for (const [el, s] of rafActive){
+    const p = Math.min(1, (now - s.t0) / D);
+    const e = 1 - Math.pow(1 - p, 4);            // easeOutQuart，近似上面的贝塞尔
+    el.style.transform = `translate(${s.dx*(1-e)}px,${s.dy*(1-e)}px)`;
+    if (p >= 1){ el.style.transform = ''; rafActive.delete(el); }
+  }
+  rafLoopId = rafActive.size ? requestAnimationFrame(rafLoop) : null;
+}
+const impls = {
+  raf: {
+    reset(el){ rafActive.delete(el); el.style.transform = ''; },
+    play(el, dx, dy){
+      rafActive.set(el, {dx, dy, t0: performance.now()});
+      rafLoopId ??= requestAnimationFrame(rafLoop);
+    }
+  },
+  css: {
+    reset(el){ el.style.transition = 'none'; el.style.transform = ''; },
+    play(el, dx, dy){
+      el.style.transform = `translate(${dx}px,${dy}px)`;   // Invert（无过渡）
+      el.getBoundingClientRect();                          // 强制 reflow，提交起点
+      el.style.transition = `transform ${D}ms ${EASE}`;
+      el.style.transform = '';                             // Play：交给 transition
+    }
+  },
+  waapi: {
+    reset(el){ el.getAnimations().forEach(a => a.cancel()); },
+    play(el, dx, dy){
+      el.animate(
+        [{transform:`translate(${dx}px,${dy}px)`},{transform:'translate(0,0)'}],
+        {duration: D, easing: EASE}
+      );
+    }
+  }
+};
+
+/* ---------- 通用 FLIP：F → (reset) → 改 DOM → L → I+P ---------- */
+const lists = {};
+for (const key of Object.keys(impls)){
+  const ul = document.getElementById(key);
+  lists[key] = ul;
+  for (let i = 0; i < N; i++){
+    const li = document.createElement('li');
+    li.dataset.id = i; li.textContent = '项目 ' + (i + 1);
+    li.style.background = COLORS[i];
+    ul.appendChild(li);
+  }
+}
+function applyOrder(key){
+  const ul = lists[key], impl = impls[key];
+  const items = [...ul.children];
+  const first = new Map(items.map(el => [el, el.getBoundingClientRect()])); // F：含当前 transform
+  items.forEach(el => impl.reset(el));                                       // 清掉进行中的动画
+  const byId = Object.fromEntries(items.map(el => [el.dataset.id, el]));
+  order.forEach(id => ul.appendChild(byId[id]));                             // 改 DOM（瞬间到终态）
+  for (const el of items){
+    const f = first.get(el), l = el.getBoundingClientRect();                 // L
+    const dx = f.left - l.left, dy = f.top - l.top;
+    if (Math.abs(dx) + Math.abs(dy) > 0.5) impl.play(el, dx, dy);            // I + P
+  }
+}
+function shuffle(){
+  for (let i = order.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [order[i], order[j]] = [order[j], order[i]];
+  }
+  Object.keys(impls).forEach(applyOrder);
+}
+
+/* ---------- 控件 ---------- */
+document.getElementById('shuffle').onclick = shuffle;
+document.getElementById('block').onclick = () => {
+  shuffle();
+  setTimeout(() => { const t = performance.now(); while (performance.now() - t < 500); }, 80);
+};
+const dur = document.getElementById('dur'), durv = document.getElementById('durv');
+dur.oninput = () => { D = +dur.value; durv.textContent = D + 'ms'; };
+
+/* ---------- 主线程心跳：rAF 驱动的小圆点 ---------- */
+const dot = document.getElementById('dot'), beat = dot.parentElement;
+(function tick(ts){
+  const w = beat.clientWidth - 12;
+  const p = (ts % 2000) / 2000, x = (p < .5 ? p * 2 : 2 - p * 2) * w;
+  dot.style.transform = `translateX(${x}px)`;
+  requestAnimationFrame(tick);
+})(0);
+</script>
+</body>
+</html>
